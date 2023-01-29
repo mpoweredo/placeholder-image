@@ -77,7 +77,7 @@ func GetImage(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Something went wrong while encoding PNG!"})
 	}
 
-	c.Attachment(text)
+	c.Attachment(text + ".png")
 	c.Type("png")
 
 	return c.Send(buf.Bytes())
