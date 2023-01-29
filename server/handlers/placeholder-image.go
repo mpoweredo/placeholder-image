@@ -7,7 +7,6 @@ import (
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"io/ioutil"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -30,6 +29,10 @@ func GetImage(c *fiber.Ctx) error {
 		height = width
 	}
 
+	if width > 2000 || height > 2000 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "File resolution is too big! maximum resolution is 2000x2000"})
+	}
+
 	text := strings.Replace(t, "-", " ", -1)
 
 	if text == "notext" {
@@ -40,11 +43,15 @@ func GetImage(c *fiber.Ctx) error {
 		text = strconv.Itoa(width) + "x" + strconv.Itoa(height)
 	}
 
+	if len(text) > 120 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Text length is too long! Maximum length is 120 characters!"})
+	}
+
 	fontf, _ := ioutil.ReadFile("./assets/poppins.ttf")
 
 	font, err := freetype.ParseFont(fontf)
 	if err != nil {
-		log.Fatal(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Something went wrong while parsing font!"})
 	}
 
 	fontSize := float64((width + height) / (width/15 + height/15))
@@ -67,12 +74,11 @@ func GetImage(c *fiber.Ctx) error {
 	buf := new(bytes.Buffer)
 
 	if err := dc.EncodePNG(buf); err != nil {
-		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Something went wrong while encoding PNG!"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Something went wrong while encoding PNG!"})
 	}
 
 	c.Attachment(text)
 	c.Type("png")
-	c.Send(buf.Bytes())
 
-	return nil
+	return c.Send(buf.Bytes())
 }
