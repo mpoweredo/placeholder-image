@@ -3,23 +3,21 @@ package handlers
 import (
 	"bytes"
 	"github.com/fogleman/gg"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"strconv"
 	"strings"
 )
 
-func GetImage(w http.ResponseWriter, r *http.Request) {
-	v := mux.Vars(r)
+func GetImage(c *fiber.Ctx) error {
+	r := c.Params("resolution")
 
-	r_ := v["resolution"]
-	t := r.URL.Query().Get("text")
+	t := c.Query("text")
 
-	parts := strings.Split(r_, "x")
+	parts := strings.Split(r, "x")
 
 	var resolution [2]int
 	for i, p := range parts {
@@ -49,7 +47,7 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	fontSize := float64((width + height) / (width/22 + height/22))
+	fontSize := float64((width + height) / (width/15 + height/15))
 
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
 
@@ -67,19 +65,14 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 		gg.AlignCenter)
 
 	buf := new(bytes.Buffer)
-	dc.EncodePNG(buf)
 
-	fileSize := buf.Len()
+	if err := dc.EncodePNG(buf); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Something went wrong while encoding PNG!"})
+	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Transfer-Encoding", "binary")
-	w.Header().Set("Content-Disposition", "attachment; filename="+text)
-	w.Header().Set("Content-Type", "image/png")
-	w.Header().Set("Content-Length", strconv.FormatInt(int64(fileSize), 10))
+	c.Attachment(text)
+	c.Type("png")
+	c.Send(buf.Bytes())
 
-	buf.WriteTo(w)
-
-	return
-
+	return nil
 }

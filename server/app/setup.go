@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log"
-	"net/http"
 	"placeholder-image/config"
-	"placeholder-image/routes"
+	"placeholder-image/router"
 )
 
 func main() {
@@ -16,11 +15,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := mux.NewRouter()
-	routes.PlaceholderRoutes(r)
+	app := fiber.New()
 
-	http.Handle("/", r)
-	fmt.Println("listening on port: ", ":"+port)
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	app.Use(recover.New())
+
+	router.SetupRoutes(app)
+
+	app.Listen(":" + port)
 
 }
