@@ -10,12 +10,14 @@ const CreateImageBar = () => {
 
   const handleDownload = async () => {
     if (!widthRef.current || !heightRef.current || !titleRef.current) return
-    const width = widthRef.current.value
-    const height = heightRef.current.value
-    const title = titleRef.current.value
+    const width = +widthRef.current.value
+    const height = +heightRef.current.value
+    const title =  titleRef.current.value
       .replace(/\s{2,}/g, ' ')
       .split(' ')
       .join('-')
+
+    if (width <= 10 || height <= 10 || 2001 <= width || 2001 <= height) return
 
     const response = await fetch(
       `https://placeholder-image-production.up.railway.app/${width}x${height}?text=${title}`
@@ -28,7 +30,7 @@ const CreateImageBar = () => {
     const link = document.createElement('a')
     link.style.display = 'none'
     link.href = imageURL
-    link.download = `${title}.png`
+    link.download = `${title ? title : 'placeholder-image'}.png`
     document.body.appendChild(link)
     link.click()
     window.URL.revokeObjectURL(imageURL)
