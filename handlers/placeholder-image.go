@@ -7,6 +7,7 @@ import (
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"io/ioutil"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -54,7 +55,7 @@ func GetImage(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Something went wrong while parsing font!"})
 	}
 
-	fontSize := float64((width + height) / (width/15 + height/15))
+	fontSize := math.Max(float64(width), float64(height)) / 20
 
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
 
