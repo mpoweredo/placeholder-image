@@ -1,7 +1,12 @@
+import MainTitle from './components/MainTitle'
+import CreateImageBar from './components/CreateImageBar'
+
 function App() {
   return (
-    <div className='App'>
-      <h1 className='text-lime-500 font-bold'>test</h1>
+    <div className='App mt-16 flex flex-col items-center justify-center'>
+      <MainTitle />
+
+      <CreateImageBar />
     </div>
   )
 }

@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+    @font-face {
+        font-family: Satoshi;
+        font-weight: 300;
+        src: url(../fonts/Satoshi-Light.woff) format("woff");
+    }
+
+    @font-face {
+        font-family: Satoshi;
+        font-weight: 400;
+        src: url(../fonts/Satoshi-Regular.woff) format("woff");
+    }
+
+    @font-face {
+        font-family: Satoshi;
+        font-weight: 500;
+        src: url(../fonts/Satoshi-Medium.woff) format("woff");
+    }
+
+    @font-face {
+        font-family: Satoshi;
+        font-weight: 700;
+        src: url(../fonts/Satoshi-Bold.woff) format("woff");
+    }
+
+    @font-face {
+        font-family: Satoshi;
+        font-weight: 900;
+        src: url(../fonts/Satoshi-Black.woff) format("woff");
+    }
+}
+
+body {
+    font-family: Satoshi;
+    background: #131214;
+}
+
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
