@@ -22,7 +22,7 @@ jobs:
         go-version: 1.19
 
     - name: Build
-      run: go build -o out app/setup.go
+      run: go build app/setup.go
 
     - name: Test
       run: go test -v ./...
